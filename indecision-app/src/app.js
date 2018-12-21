@@ -6,6 +6,7 @@ console.log('App.js is running!');
 // use title/subtitle 
 //render template
 
+
 var app = {
     title: 'InDecision',
     subtitle: 'In Decision App'
