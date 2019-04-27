@@ -1,56 +1,31 @@
-import React, { useState, useEffect, useReducer } from 'react';
-import notesReducer from '../reducers/notes'
-import Note from './Note'
+import React, { useEffect, useReducer } from "react";
+import notesReducer from "../reducers/notes";
+import NoteList from "./NoteList";
+import AddNoteForm from "./AddNoteForm";
+import NotesContext from "../context/notes-context";
 
 const NoteApp = () => {
-    const [notes, dispatch] = useReducer(notesReducer, [])
-    const [title, setTitle] = useState('')
-    const [body, setBody] = useState('')
+  const [notes, dispatch] = useReducer(notesReducer, []);
 
-    const addNote = (e) => {
-        e.preventDefault()
-        dispatch({
-            type: 'ADD_NOTE',
-            title,
-            body
-        })
-        setTitle('')
-        setBody('')
+  useEffect(() => {
+    const notes = JSON.parse(localStorage.getItem("notes"));
+
+    if (notes) {
+      dispatch({ type: "POPULATE_NOTES", notes });
     }
+  }, []);
 
-    const removeNote = (title) => {
-        dispatch({
-            type: 'REMOVE_NOTE',
-            title
-        })
-    }
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+  }, [notes]);
 
-    useEffect(() => {
-        const notes = JSON.parse(localStorage.getItem('notes'))
+  return (
+    <NotesContext.Provider value={{ notes, dispatch }}>
+      <h1>Notes</h1>
+      <NoteList />
+      <AddNoteForm />
+    </NotesContext.Provider>
+  );
+};
 
-        if (notes) {
-            dispatch({ type: 'POPULATE_NOTES', notes })
-        }
-    }, [])
-
-    useEffect(() => {
-        localStorage.setItem('notes', JSON.stringify(notes))
-    }, [notes])
-
-    return (
-        <div>
-            <h1>Notes</h1>
-            {notes.map((note) => (
-                <Note key={note.title} note={note} removeNote={removeNote}/>
-            ))}
-            <p>Add note</p>
-            <form onSubmit={addNote}>
-                <input value={title} onChange={(e) => setTitle(e.target.value)} />
-                <textarea value={body} onChange={(e) => setBody(e.target.value)}></textarea>
-                <button>add note</button>
-            </form>
-        </div>
-    )
-}
-
-export {NoteApp as default}
+export { NoteApp as default };
